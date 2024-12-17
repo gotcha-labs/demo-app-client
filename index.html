@@ -197,17 +197,6 @@
     <script src="https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api.js" async defer></script>
     <script>
         let captchaInitialized = false;
-        const SITE_KEY = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
-
-        window.addEventListener('message', async function(e) {
-            const apiUrl = new URL(document.querySelector('script[src*="api.js"]').src);
-            if (e.origin !== apiUrl.origin) return;
-
-            const data = e.data;
-            if (data.type === 'response-callback') {
-                handleCaptchaResponse(data.success);
-            }
-        });
 
         function showCaptcha() {
             const modal = document.getElementById('captchaModal');
@@ -215,7 +204,10 @@
             
             if (!captchaInitialized) {
                 grecaptcha.render('captcha-container', {
-                    sitekey: SITE_KEY
+                    sitekey: '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q',
+                    callback: onCaptchaResponse,
+                    'expired-callback': onCaptchaExpired,
+                    'error-callback': onCaptchaError
                 });
                 captchaInitialized = true;
             } else {
@@ -252,15 +244,28 @@
             document.getElementById('error-state').style.display = 'none';
         }
 
-        async function handleCaptchaResponse(success) {
+        async function onCaptchaResponse(token) {
             closeModal();
-            if (success) {
+            
+            if (token) {
                 showSuccessState();
-                console.log('CAPTCHA verification successful');
+                console.log('CAPTCHA verified successfully, token:', token);
             } else {
                 showErrorState();
-                console.log('CAPTCHA verification failed');
+                console.log('CAPTCHA verification failed - no token received');
             }
+        }
+
+        function onCaptchaExpired() {
+            closeModal();
+            showErrorState();
+            console.log('CAPTCHA expired');
+        }
+
+        function onCaptchaError() {
+            closeModal();
+            showErrorState();
+            console.log('CAPTCHA error occurred');
         }
 
         window.onclick = function(event) {
