@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAPTCHA Verification</title>
+    <title>Crypto Faucet - Get Free Tokens</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -13,43 +19,109 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f2f5;
+            background: linear-gradient(135deg, #13151a 0%, #1f2937 100%);
+            color: white;
+            padding: 20px;
         }
 
         .container {
             text-align: center;
             padding: 2rem;
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            width: 320px;  /* Reduced width */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00f5a0 0%, #00d9f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .wallet-input {
+            width: 100%;
+            padding: 12px;
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            min-width: 320px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-input:focus {
+            outline: none;
+            border-color: rgba(0, 245, 160, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .wallet-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .verify-button {
             padding: 12px 24px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
+            font-size: 14px;
+            background: linear-gradient(45deg, #00f5a0, #00d9f5);
+            color: #13151a;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+            text-transform: uppercase;
+            font-weight: bold;
+            width: 160px;  /* Reduced width */
         }
 
         .verify-button:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 245, 160, 0.3);
+        }
+
+        .verify-button:active {
+            transform: translateY(0);
+        }
+
+        .faucet-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .faucet-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .timer {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 10px 0;
         }
 
         .success-state, .error-state {
             display: none;
             padding: 20px;
             text-align: center;
+            animation: fadeIn 0.5s ease-in;
         }
 
         .icon {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
@@ -58,27 +130,27 @@
         }
 
         .success-icon {
-            background-color: #4CAF50;
+            background: linear-gradient(45deg, #00f5a0, #00d9f5);
         }
 
         .error-icon {
-            background-color: #dc3545;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
         }
 
         .icon-symbol {
-            color: white;
-            font-size: 35px;
+            color: #13151a;
+            font-size: 24px;
             font-weight: bold;
         }
 
         .message {
-            color: #333;
+            color: white;
             font-size: 18px;
             margin: 10px 0;
         }
 
         .sub-message {
-            color: #666;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
             margin-top: 5px;
         }
@@ -86,16 +158,16 @@
         .try-again-button {
             margin-top: 15px;
             padding: 10px 20px;
-            background-color: #6c757d;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         .try-again-button:hover {
-            background-color: #5a6268;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .modal {
@@ -105,7 +177,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.8);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -113,15 +185,16 @@
 
         .modal-content {
             position: relative;
-            background-color: white;
+            background-color: #1f2937;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-align: center;
             max-width: 95vw;
             max-height: 95vh;
             width: auto;
             margin: 0;
             overflow: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .close {
@@ -130,12 +203,12 @@
             right: 15px;
             font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: rgba(255, 255, 255, 0.5);
             z-index: 1;
         }
 
         .close:hover {
-            color: #333;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         #captcha-container {
@@ -147,6 +220,8 @@
             margin-top: 0;
             margin-bottom: 15px;
             padding-right: 20px;
+            color: white;
+            font-size: 18px;
         }
 
         @keyframes fadeIn {
@@ -157,23 +232,80 @@
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
+
+        @keyframes tokenFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .token {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMwMGY1YTAiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI4IiBmaWxsPSIjMDBkOWY1Ii8+PC9zdmc+');
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .gotcha-logo {
+            max-width: 80px; /* Reduced width */
+            margin: 1rem auto;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .gotcha-logo:hover {
+            opacity: 1;
+        }
+
+        .powered-by {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 360px) {
+            .container {
+                width: 100%;
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Verification Required!</h1>
+        <h1>Free Token Faucet</h1>
         
+        <div class="faucet-info">
+            <p>Available: 1000 TOKENS</p>
+            <p>Per Claim: 10 TOKENS</p>
+            <div class="timer">Next claim available in: 24:00:00</div>
+        </div>
+
         <div id="verification-step">
-            <p>Please complete the verification to continue</p>
-            <button class="verify-button" onclick="showCaptcha()">Click to Verify</button>
+            <input type="text" class="wallet-input" placeholder="Enter your wallet address" required>
+            <p>Complete verification to receive tokens</p>
+            <button class="verify-button" onclick="showCaptcha()">Claim Tokens</button>
+            
+            <div class="powered-by">
+                <p>Protected by</p>
+                <img src="/api/placeholder/80/28" alt="Gotcha Logo" class="gotcha-logo">
+            </div>
         </div>
 
         <div id="success-state" class="success-state">
             <div class="icon success-icon">
                 <span class="icon-symbol">✓</span>
             </div>
-            <h2 class="message">Verification Complete!</h2>
-            <p class="sub-message">Redirecting to next step...</p>
+            <h2 class="message">Tokens Sent!</h2>
+            <p class="sub-message">10 TOKENS have been sent to your wallet</p>
         </div>
 
         <div id="error-state" class="error-state">
@@ -181,7 +313,7 @@
                 <span class="icon-symbol">!</span>
             </div>
             <h2 class="message">Verification Failed</h2>
-            <p class="sub-message">Unable to verify. Please try again.</p>
+            <p class="sub-message">Please try again.</p>
             <button class="try-again-button" onclick="showCaptcha()">Try Again</button>
         </div>
     </div>
@@ -189,7 +321,7 @@
     <div id="captchaModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 class="modal-title">Please Complete Verification</h2>
+            <h2 class="modal-title">Complete Verification</h2>
             <div id="captcha-container"></div>
         </div>
     </div>
@@ -221,15 +353,34 @@
             modal.style.display = 'none';
         }
 
+        function createTokenAnimation() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const token = document.createElement('div');
+                    token.className = 'token';
+                    token.style.left = `${Math.random() * 100}vw`;
+                    token.style.animation = `tokenFall ${1 + Math.random() * 2}s linear`;
+                    document.body.appendChild(token);
+                    
+                    token.addEventListener('animationend', () => {
+                        token.remove();
+                    });
+                }, i * 100);
+            }
+        }
+
         function showSuccessState() {
             hideAllStates();
             const successState = document.getElementById('success-state');
             successState.style.display = 'block';
             successState.classList.add('fade-in');
+            createTokenAnimation();
 
+            updateTimer(24 * 60 * 60);
+            
             setTimeout(() => {
-                console.log('Would redirect to next step here');
-            }, 3000);
+                location.reload();
+            }, 5000);
         }
 
         function showErrorState() {
@@ -273,32 +424,39 @@
             
             if (!token) {
                 showErrorState();
-                console.log('CAPTCHA verification failed - no token received');
                 return;
             }
 
-            // Verify the CAPTCHA response
             const isVerified = await verifyCaptcha(token);
             
             if (isVerified) {
                 showSuccessState();
-                console.log('CAPTCHA verified successfully');
             } else {
                 showErrorState();
-                console.log('CAPTCHA verification failed - server verification failed');
             }
         }
 
         function onCaptchaExpired() {
             closeModal();
             showErrorState();
-            console.log('CAPTCHA expired');
         }
 
         function onCaptchaError() {
             closeModal();
             showErrorState();
-            console.log('CAPTCHA error occurred');
+        }
+
+        function updateTimer(seconds) {
+            const timerElement = document.querySelector('.timer');
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            timerElement.textContent = `Next claim available in: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            
+            if (seconds > 0) {
+                setTimeout(() => updateTimer(seconds - 1), 1000);
+            }
         }
 
         window.onclick = function(event) {
@@ -307,6 +465,9 @@
                 closeModal();
             }
         }
+
+        // Initialize timer
+        updateTimer(24 * 60 * 60); // 24 hours in seconds
     </script>
 </body>
 </html>
