@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPTCHA Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 320px;
+        }
+
+        .verify-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .verify-button:hover {
+            background-color: #45a049;
+        }
+
+        .success-state, .error-state {
+            display: none;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .success-icon {
+            background-color: #4CAF50;
+        }
+
+        .error-icon {
+            background-color: #dc3545;
+        }
+
+        .icon-symbol {
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .message {
+            color: #333;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .sub-message {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .try-again-button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .try-again-button:hover {
+            background-color: #5a6268;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 95vw;
+            max-height: 95vh;
+            width: auto;
+            margin: 0;
+            overflow: auto;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            z-index: 1;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        #captcha-container {
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .modal-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-right: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verification Required</h1>
+        
+        <div id="verification-step">
+            <p>Please complete the verification to continue</p>
+            <button class="verify-button" onclick="showCaptcha()">Click to Verify</button>
+        </div>
+
+        <div id="success-state" class="success-state">
+            <div class="icon success-icon">
+                <span class="icon-symbol">✓</span>
+            </div>
+            <h2 class="message">Verification Complete!</h2>
+            <p class="sub-message">Redirecting to next step...</p>
+        </div>
+
+        <div id="error-state" class="error-state">
+            <div class="icon error-icon">
+                <span class="icon-symbol">!</span>
+            </div>
+            <h2 class="message">Verification Failed</h2>
+            <p class="sub-message">Unable to verify. Please try again.</p>
+            <button class="try-again-button" onclick="showCaptcha()">Try Again</button>
+        </div>
+    </div>
+
+    <div id="captchaModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title">Please Complete Verification</h2>
+            <div id="captcha-container"></div>
+        </div>
+    </div>
+
+    <script src="https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api.js" async defer></script>
+    <script>
+        let captchaInitialized = false;
+        const SITE_KEY = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
+
+        window.addEventListener('message', async function(e) {
+            const apiUrl = new URL(document.querySelector('script[src*="api.js"]').src);
+            if (e.origin !== apiUrl.origin) return;
+
+            const data = e.data;
+            if (data.type === 'response-callback') {
+                handleCaptchaResponse(data.success);
+            }
+        });
+
+        function showCaptcha() {
+            const modal = document.getElementById('captchaModal');
+            modal.style.display = 'flex';
+            
+            if (!captchaInitialized) {
+                grecaptcha.render('captcha-container', {
+                    sitekey: SITE_KEY
+                });
+                captchaInitialized = true;
+            } else {
+                grecaptcha.reset();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('captchaModal');
+            modal.style.display = 'none';
+        }
+
+        function showSuccessState() {
+            hideAllStates();
+            const successState = document.getElementById('success-state');
+            successState.style.display = 'block';
+            successState.classList.add('fade-in');
+
+            setTimeout(() => {
+                console.log('Would redirect to next step here');
+            }, 3000);
+        }
+
+        function showErrorState() {
+            hideAllStates();
+            const errorState = document.getElementById('error-state');
+            errorState.style.display = 'block';
+            errorState.classList.add('fade-in');
+        }
+
+        function hideAllStates() {
+            document.getElementById('verification-step').style.display = 'none';
+            document.getElementById('success-state').style.display = 'none';
+            document.getElementById('error-state').style.display = 'none';
+        }
+
+        async function handleCaptchaResponse(success) {
+            closeModal();
+            if (success) {
+                showSuccessState();
+                console.log('CAPTCHA verification successful');
+            } else {
+                showErrorState();
+                console.log('CAPTCHA verification failed');
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('captchaModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
