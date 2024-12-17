@@ -197,6 +197,7 @@
     <script src="https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api.js?render=explicit"></script>
     <script>
         let captchaInitialized = false;
+        const SITEKEY = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
 
         function showCaptcha() {
             const modal = document.getElementById('captchaModal');
@@ -204,7 +205,7 @@
             
             if (!captchaInitialized) {
                 grecaptcha.render('captcha-container', {
-                    sitekey: '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q',
+                    sitekey: SITEKEY,
                     callback: onCaptchaResponse,
                     'expired-callback': onCaptchaExpired,
                     'error-callback': onCaptchaError
@@ -244,15 +245,47 @@
             document.getElementById('error-state').style.display = 'none';
         }
 
+        async function verifyCaptcha(responseToken) {
+            try {
+                const form = new FormData();
+                form.append('secret', SITEKEY);
+                form.append('response', responseToken);
+
+                const response = await fetch('https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api/siteverify', {
+                    method: 'POST',
+                    body: new URLSearchParams(form)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Verification failed');
+                }
+
+                const data = await response.json();
+                return data.success === true;
+            } catch (error) {
+                console.error('Verification error:', error);
+                return false;
+            }
+        }
+
         async function onCaptchaResponse(token) {
             closeModal();
             
-            if (token) {
-                showSuccessState();
-                console.log('CAPTCHA verified successfully, token:', token);
-            } else {
+            if (!token) {
                 showErrorState();
                 console.log('CAPTCHA verification failed - no token received');
+                return;
+            }
+
+            // Verify the CAPTCHA response
+            const isVerified = await verifyCaptcha(token);
+            
+            if (isVerified) {
+                showSuccessState();
+                console.log('CAPTCHA verified successfully');
+            } else {
+                showErrorState();
+                console.log('CAPTCHA verification failed - server verification failed');
             }
         }
 
