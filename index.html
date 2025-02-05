@@ -88,7 +88,7 @@
             box-shadow: 0 4px 12px rgba(0, 245, 160, 0.3);
         }
 
-        .-button:active {
+        .verify-button:active {
             transform: translateY(0);
         }
 
@@ -326,17 +326,10 @@
         </div>
     </div>
 
-    <!-- Uncomment for reCAPTCHA
-    <script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
-    -->
     <script src="https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api.js?render=explicit"></script>
     <script>
         let captchaInitialized = false;
-        // Uncomment for reCAPTCHA
-        // const SITEKEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-        // const SECRET = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
         const SITEKEY = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
-        const SECRET = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
 
         function showCaptcha() {
             const modal = document.getElementById('captchaModal');
@@ -406,7 +399,7 @@
         async function verifyCaptcha(responseToken) {
             try {
                 const form = new FormData();
-                form.append('secret', SECRET);
+                form.append('secret', SITEKEY);
                 form.append('response', responseToken);
 
                 const response = await fetch('https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api/siteverify', {
