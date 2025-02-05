@@ -88,7 +88,7 @@
             box-shadow: 0 4px 12px rgba(0, 245, 160, 0.3);
         }
 
-        .verify-button:active {
+        .-button:active {
             transform: translateY(0);
         }
 
@@ -409,7 +409,7 @@
                 form.append('secret', SECRET);
                 form.append('response', responseToken);
 
-                const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+                const response = await fetch('https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api/siteverify', {
                     method: 'POST',
                     body: new URLSearchParams(form)
                 });
