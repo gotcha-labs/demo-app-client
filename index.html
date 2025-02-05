@@ -326,11 +326,17 @@
         </div>
     </div>
 
+    <!-- Uncomment for reCAPTCHA
     <script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
+    -->
+    <script src="https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api.js?render=explicit"></script>
     <script>
         let captchaInitialized = false;
-        const SITEKEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-        const SECRET = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+        // Uncomment for reCAPTCHA
+        // const SITEKEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+        // const SECRET = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+        const SITEKEY = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
+        const SECRET = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
 
         function showCaptcha() {
             const modal = document.getElementById('captchaModal');
