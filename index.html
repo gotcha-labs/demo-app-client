@@ -326,10 +326,11 @@
         </div>
     </div>
 
-    <script src="https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api.js?render=explicit"></script>
+    <script src="https://a3t7umsqe6.execute-api.us-east-1.amazonaws.com/api.js?render=explicit"></script>
     <script>
         let captchaInitialized = false;
-        const SITEKEY = '4BdwFU84HLqceCQbE90+U5mw7f0erayega3nFOYvp1T5qXd8IqnTHJfsh675Vb2q';
+        const SITEKEY = '3TqHTmTHO1k1zdNmy4NW7aO3ZUd-yhydSp6SwGE1E_wkN122qptRGAsD64utq3GM';
+        const SECRET = 'C1PR+en7Yjx+uHznp24oMaU128v7jHbngr+drfHsbB/vDPu9tuKw2vgifbSbjvOY';
 
         function showCaptcha() {
             const modal = document.getElementById('captchaModal');
@@ -399,10 +400,10 @@
         async function verifyCaptcha(responseToken) {
             try {
                 const form = new FormData();
-                form.append('secret', SITEKEY);
+                form.append('secret', SECRET);
                 form.append('response', responseToken);
 
-                const response = await fetch('https://kr9jv822zd.execute-api.us-east-1.amazonaws.com/api/siteverify', {
+                const response = await fetch('https://a3t7umsqe6.execute-api.us-east-1.amazonaws.com/api/siteverify', {
                     method: 'POST',
                     body: new URLSearchParams(form)
                 });
