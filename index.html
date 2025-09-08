@@ -326,7 +326,7 @@
         </div>
     </div>
 
-    <script src="https://a3t7umsqe6.execute-api.us-east-1.amazonaws.com/api.js?render=explicit"></script>
+    <script src="https://static.gotcha.land/api.js?render=explicit"></script>
     <script>
         let captchaInitialized = false;
         const SITEKEY = '3TqHTmTHO1k1zdNmy4NW7aO3ZUd-yhydSp6SwGE1E_wkN122qptRGAsD64utq3GM';
@@ -337,7 +337,7 @@
             modal.style.display = 'flex';
             
             if (!captchaInitialized) {
-                grecaptcha.render('captcha-container', {
+                gotcha.render('captcha-container', {
                     sitekey: SITEKEY,
                     callback: onCaptchaResponse,
                     'expired-callback': onCaptchaExpired,
@@ -345,7 +345,7 @@
                 });
                 captchaInitialized = true;
             } else {
-                grecaptcha.reset();
+                gotcha.reset();
             }
         }
 
