@@ -398,7 +398,7 @@
         }
 
         async function verifyCaptcha(responseToken) {
-            try {
+            /*try {
                 const form = new FormData();
                 form.append('secret', SECRET);
                 form.append('response', responseToken);
@@ -417,7 +417,13 @@
             } catch (error) {
                 console.error('Verification error:', error);
                 return false;
+            }*/
+            const verification = await gotcha.verifyResponse(SECRET, responseToken);
+            if (!verification) {
+                console.error('Verification error');
+                return false;
             }
+            return verification.success;
         }
 
         async function onCaptchaResponse(token) {
